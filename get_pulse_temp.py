@@ -74,7 +74,7 @@ class getPulseApp(object):
             camera = Camera(camera=args.url)
             self.cameras.append(camera)
 
-        if args.video_dir is None:
+        elif args.video_dir is None:
             # Real-time for camera=0, read from one video 
             camera = Camera(camera=0, vid=self.vidname)  # first camera by default
             if camera.valid or not len(self.cameras):
@@ -137,13 +137,13 @@ class getPulseApp(object):
 
     def start_record(self):
         self.processor.start_record = True
-        self.processor.bpms = []
-        self.processor.temps = []
-        self.processor.ttimes = []
-        self.processor.t1 = time.time()
+        # self.processor.bpms = []
+        # self.processor.temps = []
+        # self.processor.ttimes = []
+        # self.processor.t1 = time.time()
         self.record = True
         # self.out = cv2.VideoWriter(args.subject + '_' + str(self.q) + '.mp4', self.fourcc, self.fps, self.sz)
-        self.q += 1
+        # self.q += 1
 
     def stop_record(self):
         """
@@ -152,7 +152,7 @@ class getPulseApp(object):
         # fn = str(datetime.datetime.now())
         # fn = fn.replace(":", "_").replace(".", "_")
 
-        fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + '{:02d}'.format(self.q - 1))
+        fn = os.path.join(args.save_dir, args.subject, args.subject + '_recordings')
         # fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + self.question_number)
         data = np.vstack((self.processor.ttimes[::10], self.processor.bpms[::10], self.processor.temps[::10])).T
 

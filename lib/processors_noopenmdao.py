@@ -244,9 +244,10 @@ class findFaceGetPulse(object):
             col = (100, 255, 100)
             gap = (self.buffer_size - L) / self.fps
             # if self.start_record == True:
-            self.bpms.append(self.bpm)
-            self.temps.append(self.temp)
-            self.ttimes.append(time.time()-self.t1)
+            if not gap:
+                self.bpms.append(self.bpm)
+                self.temps.append(self.temp)
+                self.ttimes.append(time.time()-self.t1)
 
             if gap:
                 text = "(estimate: %0.1f bpm, wait %0.0f s)" % (self.bpm, gap)
