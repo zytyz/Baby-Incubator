@@ -154,7 +154,7 @@ class getPulseApp(object):
 
         fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + '{:02d}'.format(self.q - 1))
         # fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + self.question_number)
-        data = np.vstack((self.processor.ttimes, self.processor.bpms, self.processor.temps)).T
+        data = np.vstack((self.processor.ttimes[::10], self.processor.bpms[::10], self.processor.temps[::10])).T
 
         df = pd.DataFrame(data=data, columns=['Time', 'BPM', 'TEMP'])
         df.to_csv(fn + ".csv")
