@@ -39,6 +39,13 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
                 message_to_send = bytes(
                     "{:.1f}_{:.1f}_{:.1f}_{:.1f}_{:.1f}".format(0, 0, 0, 0, 0), "utf")
         elif MyRequest == 'Start':
+            os.system("github-release upload \
+                --user zytyz \
+                --repo Baby-Incubator \
+                --tag v0.1.0 \
+                --name "recordings.csv" \
+                --file recordings.csv")
+
             message_to_send = bytes(
                 "https://github.com/zytyz/Baby-Incubator/releases/download/v0/me_recordings.csv", "utf")
         else:
