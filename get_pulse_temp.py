@@ -22,22 +22,10 @@ import sys
 import pandas as pd
 import glob
 import os
+import csv
 
 from BT import *
 # from uploadFile import *
-import globalvar as gv
-
-# global glob_time
-# global glob_bpm
-# global glob_temp
-# global glob_env_temp
-# global glob_env_humid
-
-# glob_time = 0.
-# glob_bpm = 0.
-# glob_temp = 0.
-# glob_env_temp = 0.
-# glob_env_humid = 0.
 
 
 class getPulseApp(object):
@@ -113,7 +101,7 @@ class getPulseApp(object):
                     self.cameras.append(camera)
 
         self.w, self.h = 0, 0
-        self.record = False
+        # self.record = False
         self.sz = (int(self.cameras[self.selected_cam].cam.get(cv2.CAP_PROP_FRAME_WIDTH)),
                    int(self.cameras[self.selected_cam].cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
@@ -144,8 +132,8 @@ class getPulseApp(object):
         self.key_controls = {"s": self.toggle_search,
                              "d": self.toggle_display_plot,
                              "c": self.toggle_cam,
-                             "g": self.start_record,
-                             "f": self.stop_record
+                             # "g": self.start_record,
+                             # "f": self.stop_record
                              }
 
     def toggle_cam(self):
@@ -156,39 +144,37 @@ class getPulseApp(object):
             self.selected_cam += 1
             self.selected_cam = self.selected_cam % len(self.cameras)
 
-    def start_record(self):
-        self.processor.start_record = True
-        # self.processor.bpms = []
-        # self.processor.temps = []
-        # self.processor.ttimes = []
-        # self.processor.t1 = time.time()
-        self.record = True
-        # self.out = cv2.VideoWriter(args.subject + '_' + str(self.q) + '.mp4', self.fourcc, self.fps, self.sz)
-        # self.q += 1
+    # def start_record(self):
+    #     self.processor.start_record = True
+    #     # self.processor.bpms = []
+    #     # self.processor.temps = []
+    #     # self.processor.ttimes = []
+    #     # self.processor.t1 = time.time()
+    #     self.record = True
+    #     # self.out = cv2.VideoWriter(args.subject + '_' + str(self.q) + '.mp4', self.fourcc, self.fps, self.sz)
+    #     # self.q += 1
 
-    def stop_record(self):
-        """
-        Writes current data to a csv file
-        """
-        # fn = str(datetime.datetime.now())
-        # fn = fn.replace(":", "_").replace(".", "_")
+    # def stop_record(self):
+    #     """
+    #     Writes current data to a csv file
+    #     """
+    #     # fn = str(datetime.datetime.now())
+    #     # fn = fn.replace(":", "_").replace(".", "_")
 
-        fn = os.path.join(args.save_dir, args.subject,
-                          args.subject + '_recordings')
-        # fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + self.question_number)
-        data = np.vstack(
-            (self.processor.ttimes[::10], self.processor.bpms[::10], self.processor.temps[::10])).T
+    #     fn = os.path.join(args.save_dir, args.subject,
+    #                       args.subject + '_recordings')
+    #     # fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + self.question_number)
+    #     data = np.vstack(
+    #         (self.processor.ttimes[::10], self.processor.bpms[::10], self.processor.temps[::10])).T
 
-        df = pd.DataFrame(data=data, columns=['Time', 'BPM', 'TEMP'])
-        df.to_csv(fn + ".csv")
+    #     df = pd.DataFrame(data=data, columns=['Time', 'BPM', 'TEMP'])
+    #     df.to_csv(fn + ".csv")
 
-        print("Writing csv to {}.csv".format(fn))
-
-        self.processor.start_record = False
-        if self.record == True:
-            self.record = False
-            # self.out.release()
-            # print("Saving video: " + fn + '.mp4')
+    #     self.processor.start_record = False
+    #     if self.record == True:
+    #         self.record = False
+    #         # self.out.release()
+    #         # print("Saving video: " + fn + '.mp4')
 
     def toggle_search(self):
         """
@@ -244,9 +230,9 @@ class getPulseApp(object):
         self.pressed = waitKey(10) & 255  # wait for keypress for 10 ms
         if self.pressed == 27:  # exit program on 'esc'
             print("Exiting")
-            if self.record:
-                self.stop_record()
-                self.record = False
+            # if self.record:
+            #     self.stop_record()
+            #     self.record = False
             for cam in self.cameras:
                 cam.cam.release()
             if self.send_serial:
@@ -279,22 +265,22 @@ class getPulseApp(object):
         # recordRx(read)
 
         try:
-            gv.glob_time = self.processor.ttimes[-1]
-            gv.glob_bpm = self.processor.bpms[-1]
-            gv.glob_temp = self.processor.temps[-1]
+            glob_time = self.processor.ttimes[-1]
+            glob_bpm = self.processor.bpms[-1]
+            glob_temp = self.processor.temps[-1]
             np.save("body_data.npy", np.array(
-                [gv.glob_time, gv.glob_bpm, gv.glob_temp]))
+                [glob_time, glob_bpm, glob_temp]))
         except:
             pass
 
         try:
-            gv.glob_env_temp = read.split('_')[0]
-            gv.glob_env_humid = read.split('_')[1]
-            print('receiving env temp: ', gv.glob_env_temp)
-            print('receiving env humid: ', gv.glob_env_humid)
+            glob_env_temp = read.split('_')[0]
+            glob_env_humid = read.split('_')[1]
+            print('receiving env temp: ', glob_env_temp)
+            print('receiving env humid: ', glob_env_humid)
 
             np.save('env_data.npy', np.array(
-                [gv.glob_env_temp, gv.glob_env_humid]))
+                [glob_env_temp, glob_env_humid]))
 
         except:
             pass
@@ -371,16 +357,16 @@ def get_pulse(args):
     App.ser = bluetooth()
     App.ser.do_connect('/dev/cu.HC-06-SPPDev')
 
-    delay = 0
-    while App.kill == False:
-        App.main_loop()
-        if delay % 5 == 0:
-            App.Tx = True
-        delay += 1
-
-    if App.record:
-        App.record = False
-        App.stop_record()
+    with open(args.subject + '_recordings.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Time', 'BPM', 'TEMP'])
+        delay = 0
+        while App.kill == False:
+            App.main_loop()
+            if delay % 5 == 0: App.Tx = True
+            if len(App.processor.ttimes) and len(App.processor.ttimes) % 3 == 0:
+                writer.writerow([App.processor.ttimes[-1], App.processor.bpms[-1], App.processor.temps[-1]])
+            delay += 1
 
 
 if __name__ == "__main__":

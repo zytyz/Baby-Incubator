@@ -27,7 +27,7 @@ class findFaceGetPulse(object):
         self.fps = 0
         self.buffer_size = 250
         #self.window = np.hamming(self.buffer_size)
-        self.start_record = False
+        # self.start_record = False
         self.data_buffer = []
         self.times = []
         self.ttimes = []
@@ -44,7 +44,7 @@ class findFaceGetPulse(object):
         self.init_bpm = 0
         self.init_temp = 0
         self.temps = []
-        self.temp = 0.
+        self.temp = 36.5
         dpath = resource_path("haarcascade_frontalface_alt.xml")
         if not os.path.exists(dpath):
             print("Cascade file not present!")
@@ -174,15 +174,15 @@ class findFaceGetPulse(object):
         cv2.putText(self.frame_out, "Press 'D' to toggle data plot",
                    (10, 75), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
         
-        if self.start_record:
-            cv2.putText(self.frame_out, "Press 'F' to save",
-                   (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
-        else :
-            cv2.putText(self.frame_out, "Press 'G' to start recording",
-                   (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+        # if self.start_record:
+        #     cv2.putText(self.frame_out, "Press 'F' to save",
+        #            (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+        # else :
+        #     cv2.putText(self.frame_out, "Press 'G' to start recording",
+        #            (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
         
         cv2.putText(self.frame_out, "Press 'Esc' to quit",
-                   (10, 125), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
+                   (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.5, col)
 
         forehead1 = self.get_subface_coord(0.5, 0.13, 0.25, 0.15)
         self.draw_rect(forehead1)

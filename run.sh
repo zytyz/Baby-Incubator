@@ -3,6 +3,6 @@
 SUBJECT_NAME=$1
 WEBCAM_URL=$2
 HTTP_IP=$3
-tmux new-session -s incubator -d "source deactivate; conda activate bioexp; which python; cd ~/Desktop/Baby-Incubator; python get_pulse_temp.py --subject $SUBJECT_NAME --url $WEBCAM_URL"
-tmux new-window -t incubator:1 "source deactivate; conda activate bioexp; which python; cd ~/Desktop/Baby-Incubator; python connect_app.py $HTTP_IP"
+tmux new-session -s incubator -d "conda activate py37; cd ~/Desktop/Baby-Incubator; python get_pulse_temp.py --subject $SUBJECT_NAME --url $WEBCAM_URL"
+tmux new-window -t incubator:1 "conda activate py37; cd ~/Desktop/Baby-Incubator; python connect_app.py $HTTP_IP"
 tmux attach -t incubator
