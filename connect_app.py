@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 import sys
-from globalvar import *
+import numpy as np
 
 MyRequest = None
 newRequest = False
@@ -22,7 +22,21 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
 
         #send message 
         if MyRequest == "Get_Data":
-            message_to_send = bytes("{}_{}_{}_{}_{}".format(glob_time, glob_temp, glob_bpm, glob_env_temp, glob_env_humid), "utf")
+            try:
+                data_body = np.load("body_data.npy").astype(np.float)
+                time = data_body[0]
+                bpm = data_body[1]
+                temp = data_body[2]
+
+                data_env = np.load("env_data.npy").astype(np.float)
+                env_temp = data_env[0]
+                env_humid = data_env[1]
+
+                message_to_send = bytes("{:.1f}_{:.1f}_{:.1f}_{:.1f}_{:.1f}".format(time, temp, bpm, env_temp, env_humid), "utf")
+                print(message_to_send)
+            except Exception as e:
+                print(e)
+                message_to_send = bytes("No Data", "utf")
         else:
             message_to_send = bytes("hi", "utf")
         self.send_response(200)

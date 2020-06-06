@@ -269,22 +269,30 @@ class getPulseApp(object):
 
         if len(self.processor.temps) and self.Tx:
             self.ser.SerialWrite(self.processor.temps[-1])
+            read = self.ser.SerialReadString()
             self.Tx = False
 
-        read = self.ser.SerialReadString()
+        
         # recordRx(read)
 
         try:
             gv.glob_time = self.processor.ttimes[-1]
             gv.glob_bpm = self.processor.bpms[-1]
             gv.glob_temp = self.processor.temps[-1]
+            np.save("body_data.npy", np.array([gv.glob_time, gv.glob_bpm, gv.glob_temp]))
+        except:
+            pass
 
+        try:
             gv.glob_env_temp = read.split('_')[0]
             gv.glob_env_humid = read.split('_')[1]
             print('receiving env temp: ', gv.glob_env_temp)
             print('receiving env humid: ', gv.glob_env_humid)
 
-        except: pass
+            np.save('env_data.npy', np.array([gv.glob_env_temp, gv.glob_env_humid]))
+
+        except:
+            pass
 
 
 
@@ -363,7 +371,7 @@ def get_pulse(args):
     delay = 0
     while App.kill == False:
         App.main_loop()
-        if delay % 1 == 0: App.Tx = True
+        if delay % 5 == 0: App.Tx = True
         delay += 1
 
     if App.record:
