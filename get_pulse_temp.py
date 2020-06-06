@@ -23,9 +23,21 @@ import pandas as pd
 import glob
 import os
 
-from BT_v2 import *
-from uploadFile import *
+from BT import *
+# from uploadFile import *
 import globalvar as gv
+
+# global glob_time
+# global glob_bpm
+# global glob_temp 
+# global glob_env_temp
+# global glob_env_humid
+
+# glob_time = 0.
+# glob_bpm = 0.
+# glob_temp = 0.
+# glob_env_temp = 0.
+# glob_env_humid = 0.
 
 class getPulseApp(object):
     """
@@ -262,12 +274,21 @@ class getPulseApp(object):
         read = self.ser.SerialReadString()
         # recordRx(read)
 
-        gv.glob_time = self.processor.ttimes[-1]
-        gv.glob_bpm = self.processor.bpms[-1]
-        gv.glob_temp = self.processor.temps[-1]
-        gv.glob_env_temp = self.read.split('_')[0]
-        gv.glob_env_humid = self.read.split('_')[1]
+        try:
+            gv.glob_time = self.processor.ttimes[-1]
+            gv.glob_bpm = self.processor.bpms[-1]
+            gv.glob_temp = self.processor.temps[-1]
 
+            gv.glob_env_temp = read.split('_')[0]
+            gv.glob_env_humid = read.split('_')[1]
+            print('receiving env temp: ', gv.glob_env_temp)
+            print('receiving env humid: ', gv.glob_env_humid)
+
+        except: pass
+
+
+
+    
         frame = self.cameras[self.selected_cam].get_frame()
 
         if frame is None:
@@ -327,7 +348,7 @@ class getPulseApp(object):
         # handle any key presses
         self.key_handler()
 
-def get_pulse(args)
+def get_pulse(args):
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
 
@@ -342,7 +363,7 @@ def get_pulse(args)
     delay = 0
     while App.kill == False:
         App.main_loop()
-        if delay % 10 == 0: App.Tx = True
+        if delay % 1 == 0: App.Tx = True
         delay += 1
 
     if App.record:
