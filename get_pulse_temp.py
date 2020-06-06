@@ -370,7 +370,7 @@ def get_pulse(args):
             with open('recordings.csv', 'a', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow([index, App.processor.ttimes[-1], App.processor.bpms[-1], App.processor.temps[-1], 0])
-                index += 1
+            index += 1
         delay += 1
 
 

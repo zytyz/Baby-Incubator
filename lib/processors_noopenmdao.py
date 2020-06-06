@@ -232,8 +232,7 @@ class findFaceGetPulse(object):
 
             x, y, w, h = self.get_subface_coord(0.5, 0.13, 0.25, 0.15)
             r = alpha * self.frame_in[y:y + h, x:x + w, 0]
-            g = alpha * \
-                self.frame_in[y:y + h, x:x + w, 1] + \
+            g = alpha * self.frame_in[y:y + h, x:x + w, 1] + \
                 beta * self.gray[y:y + h, x:x + w]
             b = alpha * self.frame_in[y:y + h, x:x + w, 2]
             self.frame_out[y:y + h, x:x + w] = cv2.merge([r,
