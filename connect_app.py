@@ -46,33 +46,15 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
         self.wfile.write(message_to_send)
         return
 
+def run_server():
+    global httpd
+    print("Start Server")
+    httpd.serve_forever()
 
 if __name__ == '__main__':
-    def other_arduino_function():
-        global newRequest, MyRequest
-        print("Listening to Arduino...")
-        while True:
-            if newRequest:
-                print("my request: {}".format(MyRequest))
-                newRequest = False
-            # time.sleep(5)
-
-
-    def run_server():
-        print("Start Server")
-        httpd.serve_forever()
-
     try:
         server_address_httpd = (sys.argv[1], 8080)
     except:
         server_address_httpd = ('192.168.0.106', 8080)
     httpd = HTTPServer(server_address_httpd, RequestHandler_httpd)
-
-    threads = []
-    thread_server = threading.Thread(target=run_server)
-    threads.append(thread_server)
-    thread_arduino = threading.Thread(target=other_arduino_function)
-    threads.append(thread_arduino)
-    # thread.daemon = True
-    for t in threads:
-        t.start()
+    run_server()
