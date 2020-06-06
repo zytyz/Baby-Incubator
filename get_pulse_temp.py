@@ -23,6 +23,9 @@ import pandas as pd
 import glob
 import os
 
+from BT_v2 import *
+from uploadFile import *
+import globalvar as gv
 
 class getPulseApp(object):
     """
@@ -39,6 +42,9 @@ class getPulseApp(object):
         serial = args.serial
         baud = args.baud
         video = args.video
+        self.Tx = False
+        self.environment = []
+        self.ser = None
         self.kill = False
         self.vidname = ""
         self.send_serial = False
@@ -234,11 +240,34 @@ class getPulseApp(object):
             if chr(self.pressed) == key:
                 self.key_controls[key]()
 
+    # def recordRx(self, read):
+    #     self.environment.append(read)
+    #     if ???:
+    #         data = np.vstack(self.environment[::2], self.environment[1::2]).T
+    #         df = pd.DataFrame(data=data, columns=['temperature', 'humidity'])
+    #         df.to_csv("environment.csv")
+    #     uploadFile("environment.csv")
+
+
     def main_loop(self):
         """
         Single iteration of the application's main loop.
         """
         # Get current image frame from the camera
+
+        if len(self.processor.temps) and self.Tx:
+            self.ser.SerialWrite(self.processor.temps[-1])
+            self.Tx = False
+
+        read = self.ser.SerialReadString()
+        # recordRx(read)
+
+        gv.glob_time = self.processor.ttimes[-1]
+        gv.glob_bpm = self.processor.bpms[-1]
+        gv.glob_temp = self.processor.temps[-1]
+        gv.glob_env_temp = self.read.split('_')[0]
+        gv.glob_env_humid = self.read.split('_')[1]
+
         frame = self.cameras[self.selected_cam].get_frame()
 
         if frame is None:
@@ -298,6 +327,27 @@ class getPulseApp(object):
         # handle any key presses
         self.key_handler()
 
+def get_pulse(args)
+    if not os.path.exists(args.save_dir):
+        os.makedirs(args.save_dir)
+
+    if not os.path.exists(os.path.join(args.save_dir, args.subject)):
+        os.makedirs(os.path.join(args.save_dir, args.subject))
+
+    App = getPulseApp(args)
+
+    App.ser = bluetooth()
+    App.ser.do_connect('/dev/cu.HC-06-SPPDev')
+
+    delay = 0
+    while App.kill == False:
+        App.main_loop()
+        if delay % 10 == 0: App.Tx = True
+        delay += 1
+
+    if App.record:
+        App.record = False
+        App.stop_record()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Webcam pulse detector.')
@@ -314,26 +364,12 @@ if __name__ == "__main__":
     parser.add_argument('--video_dir', default=None, help='directory name of all videos to be analyzed')
 
     parser.add_argument('--save_dir', default='data_pulse', help='directory to save the csv files')
-
+    parser.add_argument('--BT', default=b'98:D3:71:F9:89:EC', type=bytes)
     parser.add_argument('--url', default=None, type=str,
                         help='IP Webcam url (ex: http://192.168.0.101:8080/video)')
 
     args = parser.parse_args()
 
     print(args)
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
+    get_pulse(args)
 
-    if not os.path.exists(os.path.join(args.save_dir, args.subject)):
-        os.makedirs(os.path.join(args.save_dir, args.subject))
-
-    # print(os.path.join(args.save_dir, args.subject))
-
-    App = getPulseApp(args)
-
-    while App.kill == False:
-        App.main_loop()
-
-    if App.record:
-        App.record = False
-        App.stop_record()

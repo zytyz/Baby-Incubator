@@ -44,7 +44,7 @@ class findFaceGetPulse(object):
         self.init_bpm = 0
         self.init_temp = 0
         self.temps = []
-        self.temp = 0
+        self.temp = 0.
         dpath = resource_path("haarcascade_frontalface_alt.xml")
         if not os.path.exists(dpath):
             print("Cascade file not present!")
@@ -246,7 +246,7 @@ class findFaceGetPulse(object):
             # if self.start_record == True:
             if not gap:
                 self.bpms.append(self.bpm)
-                self.temps.append(self.temp)
+                self.temps.append(float(self.temp))
                 self.ttimes.append(time.time()-self.t1)
 
             if gap:
