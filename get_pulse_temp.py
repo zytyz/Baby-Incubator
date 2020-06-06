@@ -29,7 +29,7 @@ import globalvar as gv
 
 # global glob_time
 # global glob_bpm
-# global glob_temp 
+# global glob_temp
 # global glob_env_temp
 # global glob_env_humid
 
@@ -38,6 +38,7 @@ import globalvar as gv
 # glob_temp = 0.
 # glob_env_temp = 0.
 # glob_env_humid = 0.
+
 
 class getPulseApp(object):
     """
@@ -93,8 +94,9 @@ class getPulseApp(object):
             self.cameras.append(camera)
 
         elif args.video_dir is None:
-            # Real-time for camera=0, read from one video 
-            camera = Camera(camera=0, vid=self.vidname)  # first camera by default
+            # Real-time for camera=0, read from one video
+            # first camera by default
+            camera = Camera(camera=0, vid=self.vidname)
             if camera.valid or not len(self.cameras):
                 self.cameras.append(camera)
             else:
@@ -105,7 +107,8 @@ class getPulseApp(object):
             self.video_names = glob.glob(args.video_dir + '/*.mp4')
             self.video_names.sort()
             for i in range(len(self.video_names)):
-                camera = Video(vid=self.video_names[i])  # start from the first video
+                # start from the first video
+                camera = Video(vid=self.video_names[i])
                 if camera.valid or not len(self.cameras):
                     self.cameras.append(camera)
 
@@ -170,9 +173,11 @@ class getPulseApp(object):
         # fn = str(datetime.datetime.now())
         # fn = fn.replace(":", "_").replace(".", "_")
 
-        fn = os.path.join(args.save_dir, args.subject, args.subject + '_recordings')
+        fn = os.path.join(args.save_dir, args.subject,
+                          args.subject + '_recordings')
         # fn = os.path.join(args.save_dir, args.subject, args.subject + '_' + self.question_number)
-        data = np.vstack((self.processor.ttimes[::10], self.processor.bpms[::10], self.processor.temps[::10])).T
+        data = np.vstack(
+            (self.processor.ttimes[::10], self.processor.bpms[::10], self.processor.temps[::10])).T
 
         df = pd.DataFrame(data=data, columns=['Time', 'BPM', 'TEMP'])
         df.to_csv(fn + ".csv")
@@ -260,7 +265,6 @@ class getPulseApp(object):
     #         df.to_csv("environment.csv")
     #     uploadFile("environment.csv")
 
-
     def main_loop(self):
         """
         Single iteration of the application's main loop.
@@ -272,14 +276,14 @@ class getPulseApp(object):
             read = self.ser.SerialReadString()
             self.Tx = False
 
-        
         # recordRx(read)
 
         try:
             gv.glob_time = self.processor.ttimes[-1]
             gv.glob_bpm = self.processor.bpms[-1]
             gv.glob_temp = self.processor.temps[-1]
-            np.save("body_data.npy", np.array([gv.glob_time, gv.glob_bpm, gv.glob_temp]))
+            np.save("body_data.npy", np.array(
+                [gv.glob_time, gv.glob_bpm, gv.glob_temp]))
         except:
             pass
 
@@ -289,14 +293,11 @@ class getPulseApp(object):
             print('receiving env temp: ', gv.glob_env_temp)
             print('receiving env humid: ', gv.glob_env_humid)
 
-            np.save('env_data.npy', np.array([gv.glob_env_temp, gv.glob_env_humid]))
+            np.save('env_data.npy', np.array(
+                [gv.glob_env_temp, gv.glob_env_humid]))
 
         except:
             pass
-
-
-
-    
         frame = self.cameras[self.selected_cam].get_frame()
 
         if frame is None:
@@ -316,7 +317,8 @@ class getPulseApp(object):
                     return
 
                 self.cameras[self.selected_cam].reset_video()
-                print('Changing to next video...{}'.format(self.video_names[self.selected_cam]))
+                print('Changing to next video...{}'.format(
+                    self.video_names[self.selected_cam]))
                 self.start_record()
                 return
 
@@ -356,6 +358,7 @@ class getPulseApp(object):
         # handle any key presses
         self.key_handler()
 
+
 def get_pulse(args):
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
@@ -371,12 +374,14 @@ def get_pulse(args):
     delay = 0
     while App.kill == False:
         App.main_loop()
-        if delay % 5 == 0: App.Tx = True
+        if delay % 5 == 0:
+            App.Tx = True
         delay += 1
 
     if App.record:
         App.record = False
         App.stop_record()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Webcam pulse detector.')
@@ -390,9 +395,11 @@ if __name__ == "__main__":
     parser.add_argument('--init_temp', type=float, default=36.5)
     parser.add_argument('--video', default="",
                         help='video name (only analyze one video)')
-    parser.add_argument('--video_dir', default=None, help='directory name of all videos to be analyzed')
+    parser.add_argument('--video_dir', default=None,
+                        help='directory name of all videos to be analyzed')
 
-    parser.add_argument('--save_dir', default='data_pulse', help='directory to save the csv files')
+    parser.add_argument('--save_dir', default='data_pulse',
+                        help='directory to save the csv files')
     parser.add_argument('--BT', default=b'98:D3:71:F9:89:EC', type=bytes)
     parser.add_argument('--url', default=None, type=str,
                         help='IP Webcam url (ex: http://192.168.0.101:8080/video)')
@@ -401,4 +408,3 @@ if __name__ == "__main__":
 
     print(args)
     get_pulse(args)
-

@@ -7,7 +7,6 @@ MyRequest = None
 newRequest = False
 
 
-
 class RequestHandler_httpd(BaseHTTPRequestHandler):
     def do_GET(self):
         global newRequest, MyRequest, COUNT
@@ -18,9 +17,9 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
         print(newRequest)
         print("You received this request: {}".format(MyRequest))
 
-        #upload file
+        # upload file
 
-        #send message 
+        # send message
         if MyRequest == "Get_Data":
             try:
                 data_body = np.load("body_data.npy").astype(np.float)
@@ -32,13 +31,18 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
                 env_temp = data_env[0]
                 env_humid = data_env[1]
 
-                message_to_send = bytes("{:.1f}_{:.1f}_{:.1f}_{:.1f}_{:.1f}".format(time, temp, bpm, env_temp, env_humid), "utf")
+                message_to_send = bytes("{:.1f}_{:.1f}_{:.1f}_{:.1f}_{:.1f}".format(
+                    time, temp, bpm, env_temp, env_humid), "utf")
                 print(message_to_send)
             except Exception as e:
                 print(e)
-                message_to_send = bytes("No Data", "utf")
+                message_to_send = bytes(
+                    "{:.1f}_{:.1f}_{:.1f}_{:.1f}_{:.1f}".format(0, 0, 0, 0, 0), "utf")
+        elif MyRequest == 'Start':
+            message_to_send = bytes(
+                "https://github.com/zytyz/Baby-Incubator/releases/download/v0/me_recordings.csv", "utf")
         else:
-            message_to_send = bytes("hi", "utf")
+            message_to_send = bytes("Hi", "utf")
         self.send_response(200)
         self.send_header("Content-Type", "text/plain")
         self.send_header("Content-Length", len(message_to_send))
@@ -46,10 +50,12 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
         self.wfile.write(message_to_send)
         return
 
+
 def run_server():
     global httpd
     print("Start Server")
     httpd.serve_forever()
+
 
 if __name__ == '__main__':
     try:
