@@ -366,7 +366,7 @@ def get_pulse(args):
         App.main_loop()
         if delay % 5 == 0: App.Tx = True
         if len(App.processor.ttimes) and len(App.processor.ttimes) % 3 == 0:
-            with open('recordings.csv', 'w', newline='') as csvfile:
+            with open('recordings.csv', 'a', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow([App.processor.ttimes[-1], App.processor.bpms[-1], App.processor.temps[-1], 0])
         delay += 1
