@@ -2,10 +2,19 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 import sys
 import numpy as np
+import pandas as pd
 
 MyRequest = None
 newRequest = False
 
+
+def encode_csv_to_string(csv_filename):
+    try:
+        file = pd.read_csv(csv_filename)
+        return ";".join(["{}_{}_{}".format(file['Time'][i], file['BPM'][i], file['TEMP'][i]) for i in range(len(file))])
+    except Exception as e:
+        print(e)
+        return "20_50_50;30_51_51"
 
 class RequestHandler_httpd(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -38,16 +47,13 @@ class RequestHandler_httpd(BaseHTTPRequestHandler):
                 print(e)
                 message_to_send = bytes(
                     "{:.1f}_{:.1f}_{:.1f}_{:.1f}_{:.1f}".format(0, 0, 0, 0, 0), "utf")
-        elif MyRequest == 'Start':
-            os.system("github-release upload \
-                --user zytyz \
-                --repo Baby-Incubator \
-                --tag v0.1.0 \
-                --name "recordings.csv" \
-                --file recordings.csv")
 
-            message_to_send = bytes(
-                "https://github.com/zytyz/Baby-Incubator/releases/download/v0/me_recordings.csv", "utf")
+        elif MyRequest == "Load_History":
+            encoded = encode_csv_to_string("recordings.csv")
+            message_to_send = bytes(encoded, "utf")
+
+        elif MyRequest == 'Start':
+            message_to_send = bytes("Start", "utf")
         else:
             message_to_send = bytes("Hi", "utf")
         self.send_response(200)
