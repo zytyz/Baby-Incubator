@@ -1,7 +1,7 @@
 # Baby-Incubator
 ## Introduction
 A prototype of a non-contact baby incubator which measures heart rate and body temperature remotely. The temperature is controlled at a certain value, while all the data is shown on an app monitor.
-* **Heart rate** is measured through remote PPG.
+* **Heart rate** is measured through remote PPG.[rPPG reference](https://github.com/thearn/webcam-pulse-detector)
 * **Body temperature** is estimated with heart rate.
 
 ## How to run
